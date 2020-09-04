@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SIDE FINANCE</title>
+    <link rel='stylesheet' href='stylesheets/style.css' />
+    <link rel="icon" href="images/side.png">
+    <!-- CSS only -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <link rel="stylesheet" href="font/myFont.css">
+    <meta name="viewport" content="width=500, initial-scale=1">
+    <!-- JS, Popper.js, and jQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+    <script src="https://raw.githubusercontent.com/talmand/jquery-animate-numbers/master/jquery.animateNumbers.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+    <meta name="theme-color" content="#2c4762">
+    <script src="https://unpkg.com/web3%401.2.11/dist/web3.min.js"></script>
+
+    <script>
+        (function($) {
+            $.fn.animateNumbers = function(stop, commas, duration, ease) {
+                return this.each(function() {
+                    var $this = $(this);
+                    var isInput = $this.is('input');
+                    var start = parseInt(isInput ? $this.val().replace(/,/g, "") : $this.text().replace(/,/g, ""));
+                    var regex = /(\d)(?=(\d\d\d)+(?!\d))/g;
+                    commas = commas === undefined ? true : commas;
+
+                    // number inputs can't have commas or it blanks out
+                    if (isInput && $this[0].type === 'number') {
+                        commas = false;
+                    }
+
+                    $({
+                        value: start
+                    }).animate({
+                        value: stop
+                    }, {
+                        duration: duration === undefined ? 1000 : duration,
+                        easing: ease === undefined ? "swing" : ease,
+                        step: function() {
+                            isInput ? $this.val(Math.floor(this.value)) : $this.text(Math.floor(this.value));
+                            if (commas) {
+                                isInput ? $this.val($this.val().replace(regex, "$1,")) : $this.text($this.text().replace(regex, "$1,"));
+                            }
+                        },
+                        complete: function() {
+                            if (parseInt($this.text()) !== stop || parseInt($this.val()) !== stop) {
+                                isInput ? $this.val(stop) : $this.text(stop);
+                                if (commas) {
+                                    isInput ? $this.val($this.val().replace(regex, "$1,")) : $this.text($this.text().replace(regex, "$1,"));
+                                }
+                            }
+                        }
+                    });
+                });
+            };
+        })(jQuery);
+    </script>
+    <script src="js/side.js"></script>
+
+
+</head>
+
+<style>
+    body:not(.web3) .web3true {
+        display: none;
+    }
+
+    .home .swapcard {
+        height: 175px;
+    }
+
+    .home .swapcard2 {
+        height: 115px;
+    }
+
+    .home .sidecard {
+        height: 175px;
+    }
+
+    .home .sideswapcard {
+        height: 275px;
+    }
+
+    .web3 .web3false {
+        display: none
+    }
+
+    * {
+        font-weight: 400 !important;
+    }
+
+    .yield-badge {
+        position: absolute;
+        right: -10px;
+        top: -10px;
+        font-size: 20px;
+    }
+
+    body.approved .not-approved-spend {
+        display: none
+    }
+
+    body:not(.approved) .approved-spend {
+        display: none
+    }
+
+    * {
+        font-family: 'myFont', Arial, Times New Roman !important;
+    }
+
+    html {
+        height: 100%;
+        background-color: #5D5D5D !important
+    }
+
+    body {
+        background-color: #A5A5A5 !important
+    }
+
+    .card {
+        background-color: rgba(0, 0, 0, 0.5)
+    }
+
+    .swapcardBG {
+        background-image: url("images/sideBG.png");
+    }
+
+    .swapcard,
+    .swapcard2 {
+        display: inline-block;
+        width: 300px;
+        height: 240px;
+        margin: 10px;
+        transition: 1s box-shadow;
+    }
+
+    .swapcard:hover,
+    .swapcard2:hover {
+        box-shadow: 0 0 50px rgba(255, 255, 255, 0.6)
+    }
+
+    .sidecard {
+        display: inline-block;
+        width: 300px;
+        height: 240px;
+        margin: 10px;
+        z-index: 0;
+        border-radius: 10px;
+    }
+
+    .sidecard:before {
+      content: '';
+      background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+      position: absolute;
+      top: -2px;
+      left:-2px;
+      background-size: 400%;
+      z-index: -1;
+      filter: blur(10px);
+      width: calc(100% + 4px);
+      height: calc(100% + 4px);
+      animation: glowing 20s linear infinite;
+      transition: opacity .3s ease-in-out;
+      border-radius: 10px;
+    }
+
+    .sidecard:after {
+        z-index: -1;
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: #111;
+        left: 0;
+        top: 0;
+        border-radius: 10px;
+    }
+
+    .imgcard {
+        display: inline-block;
+        #width: 300px;
+        #height: 240px;
+        margin: 0px;
+        z-index: 0;
+        border-radius: 0px;
+    }
+
+    .imgcard:before {
+      content: '';
+      background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+      position: absolute;
+      top: -2px;
+      left:-2px;
+      background-size: 400%;
+      z-index: -1;
+      filter: blur(10px);
+      width: calc(100% + 4px);
+      height: calc(100% + 4px);
+      animation: glowing 20s linear infinite;
+      transition: opacity .3s ease-in-out;
+      border-radius: 0px;
+    }
+
+    .imgcard:after {
+        z-index: -1;
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        left: 0;
+        top: 0;
+        border-radius: 0px;
+    }
+
+    @keyframes glowing {
+        0% { background-position: 0 0; }
+        50% { background-position: 300% 0; }
+        100% { background-position: 0 0; }
+    }
+
+    .tokenpair {
+        margin-bottom: 15px;
+    }
+
+    .token1,
+    .token2 {
+        display: inline-block;
+        height: 50px;
+        width: 50px;
+        border-radius: 99px;
+        border: 3px solid #FFF;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+        background: #000;
+        background-size: cover !important;
+    }
+
+    .token2 {
+        position: relative;
+        right: 8px
+    }
+
+    .token1 {
+        position: relative;
+        left: 8px;
+        z-index: 99;
+    }
+
+    .side {
+        background-image: url('images/side.png')
+    }
+
+    .usdc {
+        background-image: url('images/usdc.png')
+    }
+
+    .usdt {
+        background-image: url('images/usdt.png')
+    }
+
+    .dai {
+        background-image: url('images/dai.png')
+    }
+
+    .busd {
+        background-image: url('images/busd.svg')
+    }
+</style>
+
+<body class="text-center">
+    <div class="cover-container d-flex w-100 h-100 mx-auto flex-column">
+        <header class="masthead mb-auto">
+            <div class="inner">
+                <h3 class="masthead-brand" onclick="nav('home')">SIDE</h3>
+                <nav class="nav nav-masthead justify-content-center">
+                    <a class="nav-link" href="#home" onclick="nav('home')">HOME</a>
+                    <a class="nav-link" href="#farm" onclick="nav('farms')">FARM & TRADE</a>
+                    <a class="nav-link" href="https://side.finance">ABOUT</a>
+                </nav>
+            </div>
+        </header>
+        <main role="main" class="inner cover home">
+            <img src="images/side.png" height="200" />
+            <h1 class="cover-heading">SIDE FINANCE</h1>
+            <p class="lead"></p>
+            <p class="lead web3false">
+                <a href="#" class="btn btn-lg btn-secondary" onclick="connectWeb3()">CONNECT WALLET</a>
+            </p>
+            <div class="card swapcard hide web3true">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text">YOUR BALANCE</h6>
+                    <H2 class="card-text balance"><span>-</span> SIDE FINANCE</H2>
+                    <a href="#farms" onclick="nav('farms')" class="card-link btn btn-primary btn-lg">FARM</a>
+                </div>
+            </div>
+            <div class="card hide web3true swapcard">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text">TOKEN PRICE</h6>
+                    <H2 class="card-text tokenprice">-.--</H2>
+                    <a href="https://app.uniswap.org/#/swap?inputCurrency=ETH&outputCurrency=0x1e18821e69b9faa8e6e75dffe54e7e25754beda0" target="_blank" class="card-link btn btn-primary btn-lg">BUY</a>
+                </div>
+            </div>
+            <div class="card hide web3true swapcard2">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text">Total value staked</h6>
+                    <H2 class="card-text tvl">$<span>-.----</span></H2>
+                </div>
+            </div>
+
+            <div class="card hide web3true swapcard2">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text">Marketcap</h6>
+                    <H2 class="card-text mcap">$<span>-.----</span></H2>
+                </div>
+            </div>
+        </main>
+
+        <main role="main" class="inner cover farms" style="display:none">
+
+            <div class="">
+                <div class="card sidecard">
+                    <div class="card-body">
+                        <div class="tokenpair">
+                            <div class="token1 side"></div>
+                            <div class="token2 usdt"></div>
+                        </div>
+                        <h6 class="card-subtitle mb-2 glow">UNISWAP SIDE/USDT</h6>
+                        <H2 class="card-text apy0">APY <span class="pool0yield">---.-%</span></H2>
+                        <a href="#pool0" onclick="nav('pool0')" class="card-link btn btn-primary btn-lg">
+                            Farm
+                        </a>
+                        <a href="#" class="card-link btn btn-primary btn-lg" onclick="tradeLink(0)">
+                            Trade
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card sidecard">
+                    <div class="card-body">
+                        <div class="tokenpair">
+                            <div class="token1 side"></div>
+                            <div class="token2 busd"></div>
+                        </div>
+                        <h6 class="card-subtitle mb-2 text">UNISWAP SIDE/BUSD</h6>
+                        <H2 class="card-text apy0">APY <span class="pool1yield">---.-%</span></H2>
+                        <a href="#pool1" onclick="nav('pool1')" class="card-link btn btn-primary btn-lg">
+                            Farm
+                        </a>
+                        <a href="#" class="card-link btn btn-primary btn-lg" onclick="tradeLink(1)">
+                            Trade
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card sidecard">
+                    <div class="card-body">
+                        <div class="tokenpair">
+                            <div class="token1 side"></div>
+                            <div class="token2 dai"></div>
+                        </div>
+                        <h6 class="card-subtitle mb-2 text">UNISWAP SIDE/DAI</h6>
+                        <H2 class="card-text apy0">APY <span class="pool2yield">---.-%</span></H2>
+                        <a href="#pool2" onclick="nav('pool2')" class="card-link btn btn-primary btn-lg">
+                            Farm
+                        </a>
+                        <a href="#" class="card-link btn btn-primary btn-lg" onclick="tradeLink(2)">
+                            Trade
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card sidecard">
+                    <div class="card-body">
+                        <div class="tokenpair">
+                            <div class="token1 side"></div>
+                            <div class="token2 usdc"></div>
+                        </div>
+                        <h6 class="card-subtitle mb-2 text">UNISWAP SIDE/USDC</h6>
+                        <H2 class="card-text apy0">APY <span class="pool3yield">---.-%</span></H2>
+                        <a href="#pool3" onclick="nav('pool3')" class="card-link btn btn-primary btn-lg">
+                            Farm
+                        </a>
+                        <a href="#" class="card-link btn btn-primary btn-lg" onclick="tradeLink(3)">
+                            Trade
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+
+        </main>
+
+        <main role="main" class="inner cover pool" style="display:none">
+            <img src="images/side.png" height="200" />
+            <h1 class="cover-heading farmname">SIDE FARM</h1>
+            <p class="lead"></p>
+            <div class="row">
+                <div class="card hide web3true col-md-12 col-12">
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2 text">SIDE CLAIM</h6>
+                        <H2 class="card-text rewardbalance">-.----</H2>
+                        <a href="#" class="card-link btn btn-primary btn-lg" onclick="claimReward()">CLAIM</a>
+                    </div>
+                </div>
+                <div class="card hide web3true  col-md-6 col-12">
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2 text">Your wallet</h6>
+                        <H2 class="card-text walletbalance">-.----</H2>
+                        <DIV class="not-approved-spend">
+                            <a href="#" class="card-link btn btn-primary btn-lg" onclick="approveSpend()">APPROVE SPEND</a>
+                        </DIV>
+                        <DIV class="approved-spend">
+                            <a href="#" class="card-link btn btn-primary btn-lg" onclick="addToPool()">STAKE</a>
+                        </DIV>
+
+                    </div>
+                </div>
+                <div class="card hide web3true col-md-6 col-12">
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2 text">Staked token</h6>
+                        <H2 class="card-text stakedbalance">-.----</H2>
+                        <a href="#" class="card-link btn btn-primary btn-lg" onclick="removeFromPool()">WITHDRAW</a>
+                    </div>
+                </div>
+                <div class="card hide web3true col-md-12 col-12">
+                    <div class="card-body">
+                        <a href="#" class="card-link btn btn-primary btn-lg" onclick="getlptoken()">Get LP Token To Stake</a>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+
+        <footer class="mastfoot fixed-bottom">
+            <div class="inner">
+                <p class="d-flex justify-content-around"><a href="https://etherscan.io/address/#" target="_blank">SIDE Token Contract</a>
+                    <a href="https://etherscan.io/address/#" target="_blank">SIDE Mine Contract</a>
+                    <a href="https://uniswap.info/pair/#" target="_blank">SIDE-ETH UNISWAP</a>
+                    <a href="https://twitter.com/sidefinance" target="_blank">Twitter</a>
+                    <a href="https://discord.gg/HwtrqqV" target="_blank">Discord</a>
+                    <a href="https://www.coingecko.com/en/coins/#" target="_blank">Coingecko</a></p>
+            </div>
+        </footer>
+    </div>
+    <style>
+        /*
+ * Globals
+ */
+        /* Links */
+        a,
+        a:focus,
+        a:hover {
+            color: #fff;
+        }
+
+        /* Custom default button */
+        .btn-secondary,
+        .btn-secondary:hover,
+        .btn-secondary:focus {
+            color: #333;
+            text-shadow: none;
+            /* Prevent inheritance from `body` */
+            background-color: #fff;
+            border: .05rem solid #fff;
+        }
+
+        /*
+ * Base structure
+ */
+        html {
+            height: 100%;
+        }
+
+        body {
+            min-height: 100%;
+            display: -ms-flexbox;
+            display: flex;
+            color: #fff;
+            text-shadow: 0 .05rem .1rem rgba(0, 0, 0, .5);
+            box-shadow: inset 0 0 5rem rgba(0, 0, 0, .5);
+            padding: 50px 10px;
+        }
+
+        .cover-container {
+            max-width: 42em;
+        }
+
+
+        /*
+ * Header
+ */
+        .masthead {
+            margin-bottom: 2rem;
+        }
+
+        .masthead-brand {
+            margin-bottom: 0;
+        }
+
+        .nav-masthead .nav-link {
+            padding: .25rem 0;
+            color: rgba(255, 255, 255, .5);
+            background-color: transparent;
+            border-bottom: .25rem solid transparent;
+        }
+
+        .nav-masthead .nav-link:hover,
+        .nav-masthead .nav-link:focus {
+            border-bottom-color: rgba(255, 255, 255, .25);
+        }
+
+        .nav-masthead .nav-link+.nav-link {
+            margin-left: 1rem;
+        }
+
+        .nav-masthead .active {
+            color: #fff;
+            border-bottom-color: #fff;
+        }
+
+        @media (min-width: 48em) {
+            .masthead-brand {
+                float: left;
+            }
+
+            .nav-masthead {
+                float: right;
+            }
+        }
+
+        /*
+ * Cover
+ */
+        .cover {
+            padding: 4em 0rem;
+        }
+
+        .cover .btn-lg {
+            padding: .75rem 1.25rem;
+            font-weight: 700;
+        }
+
+        /*
+ * Footer
+ */
+        .mastfoot {
+            margin-top: 50px;
+            color: rgba(255, 255, 255, .5);
+        }
+    </style>
+</body>
+</html>
